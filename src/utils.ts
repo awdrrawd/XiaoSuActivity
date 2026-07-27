@@ -4,7 +4,7 @@ import { MODULES } from "Modules/ModulesDict";
 import { CHANGELOG, ChangeType } from "changeLogData";
 
 //   VVVVVVVVVVVVVVVVVVVVVVVVVVVVV  ----用得到的常数---- VVVVVVVVVVVVVVVVVVVVVVV    //
-export const ModRef = "https://iceriny.github.io/XiaoSuActivity/"
+export const ModRef = "https://awdrrawd.github.io/XiaoSuActivity/"
 export const VerType = DEBUG ? "dev/" : "main/";
 export const RealRef = `${ModRef}${VerType}`
 export const CSShref = `${RealRef}XSActivityStyle.css`;
@@ -18,7 +18,7 @@ export const bcModSDK = bcModSDKRef.registerMod({
     name: "XiaoSuActivity",
     fullName: "XiaoSu's Activity Expand",
     version: XSActivity_VERSION.startsWith("v") ? XSActivity_VERSION.slice(1) : XSActivity_VERSION,
-    repository: "https://github.com/iceriny/XiaoSuActivity"
+    repository: "https://github.com/awdrrawd/XiaoSuActivity"
 });
 
 // export type PatchHook = (args: any[], next: (args: any[]) => any) => any;
