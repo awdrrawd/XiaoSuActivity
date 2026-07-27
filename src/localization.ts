@@ -1,7 +1,7 @@
 import { conDebug, hookFunction } from "utils";
 
 export class Localization {
-    private static readonly LINK: string = DEBUG ? 'https://iceriny.github.io/XiaoSuActivity/dev/' : 'https://iceriny.github.io/XiaoSuActivity/main/'
+    private static readonly LINK: string = DEBUG ? 'https://awdrrawd.github.io/XiaoSuActivity/dev/' : 'https://awdrrawd.github.io/XiaoSuActivity/main/'
     public static STRINGS: IString;
 
     public static init() {
