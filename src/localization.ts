@@ -2,6 +2,7 @@ import { conDebug, hookFunction } from "utils";
 
 export class Localization {
     private static readonly LINK: string = DEBUG ? 'https://awdrrawd.github.io/XiaoSuActivity/dev/' : 'https://awdrrawd.github.io/XiaoSuActivity/main/'
+    private static readonly SUPPORTED_LANGUAGES = new Set(["TW", "CN", "EN", "DE", "FR", "RU", "UA"]);
     public static STRINGS: IString;
 
     public static init() {
@@ -18,7 +19,10 @@ export class Localization {
     private static getCount = 0;
     private static getLangJson(langCode?: string) {
         const L = langCode ? langCode : localStorage.getItem("BondageClubLanguage");
-        const lang = L ?? "CH";
+        const normalizedLanguage = (L ?? "EN").toUpperCase();
+        const lang = normalizedLanguage === "CH"
+            ? "CN"
+            : this.SUPPORTED_LANGUAGES.has(normalizedLanguage) ? normalizedLanguage : "EN";
 
         const href = this.LINK + `${lang}.json`;
 
@@ -26,6 +30,7 @@ export class Localization {
         conDebug(`获取地址: ${href}`);
         fetch(href)
             .then((response) => {
+                if (!response.ok) throw new Error(`HTTP ${response.status} while loading ${href}`);
                 return response.json();
             })
             .then((data) => {
@@ -38,6 +43,11 @@ export class Localization {
                 });
             })
             .catch((error) => {
+                if (/HTTP 4\d\d/.test(String(error))) {
+                    this.getCount = 0;
+                    console.error("获取翻译文件失败: ", error);
+                    return;
+                }
                 this.getCount++;
                 if (this.getCount < 3) {
                     console.error("获取翻译文件失败: ", error, "\n1秒后重新获取.");
@@ -45,10 +55,10 @@ export class Localization {
                         this.getLangJson();
                     }, 1000);
                 } else {
-                    if (lang === "CH") console.error("获取翻译文件失败: ", error, "\n3次失败.")
+                    if (lang === "CN") console.error("获取翻译文件失败: ", error, "\n3次失败.")
                     else {
                         console.error("获取翻译文件失败: ", error, "\n3次失败, 尝试获取默认的中文翻译.");
-                        this.getLangJson("CH");
+                        this.getLangJson("CN");
                     }
                 }
             });
