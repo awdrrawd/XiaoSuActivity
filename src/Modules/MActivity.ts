@@ -32,7 +32,20 @@ export class ActivityModule extends BaseModule {
     public Load(): void {
         this.LoadActivity();
         this.hookListHandler();
+        window.addEventListener("XSA:languageChanged", () => {
+            this.refreshActivityText();
+        });
         this.Loaded = true;
+    }
+
+    private refreshActivityText(): void {
+        this.activityText.clear();
+        this.activityDictAdd();
+        for (const pendingActivity of Object.values(this.activityToAddDict)) {
+            pendingActivity.desc?.forEach(([key, text]) => {
+                this.activityText.set(key, text);
+            });
+        }
     }
 
     private getStr(key: string, ...params: unknown[]): string {
@@ -216,30 +229,31 @@ export class ActivityModule extends BaseModule {
             const pendingActivity = this.activityToAddDict[a as XSA_ActivityName];
 
             const actName = pendingActivity.act.Name;
-            const nameWithoutPrefix = L.get("Activity", actName.substring(6) as XSA_ActivityName_onlyName);
+            const activityKey = actName.substring(6) as XSA_ActivityName_onlyName;
+            const translatedName = L.get("Activity", activityKey);
             const actTarget = pendingActivity.act.Target;
             const actTargetSelf = pendingActivity.act.TargetSelf;
 
             const addedValues: string[][] = [];
 
-            addedValues.push([`ActivityAct_${actName}`, `${nameWithoutPrefix}`]);
-            addedValues.push([`Activity${actName}`, `${nameWithoutPrefix}`]);
+            addedValues.push([`ActivityAct_${actName}`, translatedName]);
+            addedValues.push([`Activity${actName}`, translatedName]);
             if (actTarget.length > 0) {
                 for (let i = 0; i < actTarget.length; i++) {
                     const aT = actTarget[i];
                     addedValues.push([`Label-ChatOther-${aT}-${actName}`,
-                    `${nameWithoutPrefix}${pendingActivity.isBase ? L.get("Activity", aT) : ''}`]);
+                    `${translatedName}${pendingActivity.isBase ? L.get("Activity", aT) : ''}`]);
                     addedValues.push([`ChatOther-${aT}-${actName}`,
-                    this.getStr(`${nameWithoutPrefix}.Desc.0`, selfPlaceholder, targetPlaceholder, L.get("Activity", aT))]);
+                    this.getStr(`${activityKey}.Desc.0`, selfPlaceholder, targetPlaceholder, L.get("Activity", aT))]);
                     //pendingActivity.descString[0].replace(this.bodyNamePlaceholder, L.get("Activity", aT))]);
                 }
             }
             if (typeof actTargetSelf !== 'undefined' && typeof actTargetSelf !== 'boolean' && actTargetSelf.length > 0) {
                 for (const aTS of actTargetSelf) {
                     addedValues.push([`Label-ChatSelf-${aTS}-${actName}`,
-                    `${nameWithoutPrefix}${pendingActivity.isBase ? L.get("Activity", aTS) : ''}`]);
+                    `${translatedName}${pendingActivity.isBase ? L.get("Activity", aTS) : ''}`]);
                     addedValues.push([`ChatSelf-${aTS}-${actName}`,
-                    this.getStr(`${nameWithoutPrefix}.Desc.1`, selfPlaceholder, targetPlaceholder, L.get("Activity", aTS))]);
+                    this.getStr(`${activityKey}.Desc.1`, selfPlaceholder, targetPlaceholder, L.get("Activity", aTS))]);
                     // pendingActivity.descString[1].replace(this.bodyNamePlaceholder, L.get("Activity", aTS))]);
                 }
             }

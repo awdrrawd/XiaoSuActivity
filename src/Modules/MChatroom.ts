@@ -474,11 +474,17 @@ export class ChatroomModule extends BaseModule {
     private segmentForCH(str: string): string[] | null {
         // 检查浏览器是否支持 Intl.Segmenter
         if (window.Intl && window.Intl.Segmenter) {
+            const segmenterLocales: Record<string, string> = {
+                TW: "zh-Hant",
+                CN: "zh-Hans",
+                EN: "en",
+                DE: "de",
+                FR: "fr",
+                RU: "ru",
+                UA: "uk",
+            };
             const segmenter = new Intl.Segmenter(
-                L.get(
-                    "Other",
-                    TranslationLanguage.toLowerCase() as strKey<"Other">
-                ),
+                segmenterLocales[TranslationLanguage] ?? "en",
                 { granularity: "word" }
             ); // 创建分词器实例
             const segmenterResult = segmenter.segment(str); // 对文本进行分词
