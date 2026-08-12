@@ -1147,7 +1147,7 @@ export class ChatroomModule extends BaseModule {
     // VV Emoji相关方法 VV //
     private static EmojiMenu: HTMLDivElement | null = null;
     private static Emoji: Emoji | null = null;
-    private static emojiWorker: Worker | null = null;
+    private static emojiWorker: Promise<Worker> | null = null;
 
     private static getEmojiMenu(): HTMLDivElement {
         if (this.EmojiMenu) return this.EmojiMenu;
@@ -1159,12 +1159,35 @@ export class ChatroomModule extends BaseModule {
         return EmojiMenu;
     }
 
-    private static getEmojiWorker(): Worker {
+    private static getEmojiWorker(): Promise<Worker> {
         if (this.emojiWorker) return this.emojiWorker;
 
-        const emojiWorker: Worker = new Worker(EmojiWorkerRef);
-        this.emojiWorker = emojiWorker;
-        return emojiWorker;
+        // Worker 腳本託管在 github.io，与游戏源不同源，无法直接 new Worker(url)。
+        // 抓取脚本文字后包成同源 blob URL 再构造。
+        this.emojiWorker = fetch(EmojiWorkerRef)
+            .then((r) => r.text())
+            .then((code) => {
+                const blobUrl = URL.createObjectURL(
+                    new Blob([code], { type: "application/javascript" })
+                );
+                const worker = new Worker(blobUrl);
+                // listener 只注册一次；每次回复清空菜单后重建，避免结果堆叠
+                worker.addEventListener("message", (e) => {
+                    const data = e.data as string[];
+                    this.EmojiMenu!.innerHTML = "";
+                    for (const emoji of data) {
+                        const emojiElement = document.createElement("div");
+                        emojiElement.className = "emoji";
+                        emojiElement.innerText = emoji;
+                        emojiElement.addEventListener("click", (event) => {
+                            this.emojiClick(event, emojiElement);
+                        });
+                        this.EmojiMenu!.appendChild(emojiElement);
+                    }
+                });
+                return worker;
+            });
+        return this.emojiWorker;
     }
 
     private static displayEmojiMenu() {
@@ -1176,7 +1199,7 @@ export class ChatroomModule extends BaseModule {
         EmojiMenu.style.display = "none";
     }
 
-    private static inputHandle(event: Event) {
+    private static async inputHandle(event: Event) {
         const value: string = (event.target as HTMLInputElement).value;
 
         // `: [EmojiKey]` 触发emoji菜单弹出
@@ -1185,22 +1208,8 @@ export class ChatroomModule extends BaseModule {
             this.displayEmojiMenu();
 
             this.EmojiMenu!.innerHTML = "";
-            const w = this.getEmojiWorker();
+            const w = await this.getEmojiWorker();
             w.postMessage(match[1]);
-            w.addEventListener("message", (e) => {
-                const data = e.data as string[];
-
-                for (const emoji of data) {
-                    const emojiElement: HTMLDivElement =
-                        document.createElement("div");
-                    emojiElement.className = "emoji";
-                    emojiElement.innerText = emoji;
-                    emojiElement.addEventListener("click", (event) => {
-                        this.emojiClick(event, emojiElement);
-                    });
-                    this.EmojiMenu!.appendChild(emojiElement);
-                }
-            });
         } else {
             this.hideEmojiMenu();
         }
