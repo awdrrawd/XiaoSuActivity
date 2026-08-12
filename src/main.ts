@@ -3,51 +3,51 @@ import { ModuleLoader } from "Modules/ModuleLoader";
 import { Localization } from "localization";
 
 function initWait() {
-    Localization.init();
-
+    const localizationReady = Localization.init();
     conDebug({
         name: "Start Init",
         type: MSGType.Workflow_Log,
         content: "Init wait"
     });
-    if (CurrentScreen == null || CurrentScreen === 'Login') {
-        // 修改WombTattoos为非cosplay物品
-        hookFunction('LoginResponse', 999, (args, next) => {
-            const response = args[0];
-            if (response && typeof response !== 'string' && typeof response.Name === 'string' && 'AccountName' in response) {
-                
-                for (const group of AssetFemale3DCG as AssetGroupDefinition.Appearance[]) {
-                    if (group.Group === 'ClothAccessory') {
-                        for (const item of group.Asset as AssetDefinition.Appearance[]) {
-                            if (item.Name === "WombTattoos") {
-                                item.BodyCosplay = false;
-                                break;
-                            }
+    // 修改WombTattoos为非cosplay物品
+    hookFunction('LoginResponse', 999, (args, next) => {
+        const response = args[0];
+        if (response && typeof response !== 'string' && typeof response.Name === 'string' && 'AccountName' in response) {
+            for (const group of AssetFemale3DCG as AssetGroupDefinition.Appearance[]) {
+                if (group.Group === 'ClothAccessory') {
+                    for (const item of group.Asset as AssetDefinition.Appearance[]) {
+                        if (item.Name === "WombTattoos") {
+                            item.BodyCosplay = false;
+                            break;
                         }
-                        break;
                     }
+                    break;
                 }
             }
-            return next(args);
+        }
+        return next(args);
+    });
+
+    const start = () => {
+        void localizationReady.then(() => init()).catch((error) => {
+            console.error("XiaoSuActivity initialization failed:", error);
         });
-        // 加载模组
-        hookFunction('LoginResponse', 10, (args, next) => {
-            const result = next(args);
-            conDebug({
-                name: `Init! Login Response caught`,
-                content: args,
-                type: MSGType.Workflow_Log
-            });
-            const response = args[0];
-            if (response && typeof response !== 'string'
-                && typeof response.Name === 'string'
-                && 'AccountName' in response
-                || !ModuleLoader.CompleteLoadingSuccessful) {
-                init();
-            }
-            return result;
-        });
+    };
+
+    if (typeof Player !== "undefined" && Player?.MemberNumber !== undefined) {
+        start();
+        return;
     }
+
+    const removeLoginHook = hookFunction('LoginResponse', 10, (args, next) => {
+        const result = next(args);
+        queueMicrotask(() => {
+            if (typeof Player === "undefined" || Player?.MemberNumber === undefined) return;
+            removeLoginHook();
+            start();
+        });
+        return result;
+    });
 }
 
 export function init() {

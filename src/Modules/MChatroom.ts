@@ -18,6 +18,7 @@ export class ChatroomModule extends BaseModule {
     // VVVV==========初始化与加载函数==========VVVV //
     public Load(): void {
         this.hookListHandler();
+        ChatroomModule.ensureKaomojiButton();
         // this.pathListHandler();
 
         this.Loaded = true;
@@ -30,6 +31,15 @@ export class ChatroomModule extends BaseModule {
         });
         this.priority = 30;
 
+        ChatroomModule.refreshTranslations(this);
+        window.addEventListener("XSA:languageChanged", () => {
+            ChatroomModule.refreshTranslations(this);
+            ChatroomModule.removeKaomojiMenu();
+            ChatroomModule.ensureKaomojiButton();
+        });
+    }
+
+    private static refreshTranslations(module: ChatroomModule): void {
         ChatroomModule.contextmenuText = [
             ["reply", L.get("Chatroom", "Contextmenu.Button.reply")],
             ["whisper", L.get("Chatroom", "Contextmenu.Button.whisper")],
@@ -37,12 +47,14 @@ export class ChatroomModule extends BaseModule {
             ["delete", L.get("Chatroom", "Contextmenu.Button.delete")],
         ];
 
+        module.moan = [];
         for (let i = 0; i <= 9; i++) {
-            this.moan.push(
+            module.moan.push(
                 L.get("Chatroom", `moan.${i}` as strKey<"Chatroom">)
             );
         }
 
+        ChatroomModule.kaomojiSet.help = [];
         for (let i = 0; i <= 7; i++) {
             ChatroomModule.kaomojiSet.help.push(
                 L.get("Chatroom", `kaomojiHelp.${i}` as strKey<"Chatroom">)
@@ -61,16 +73,17 @@ export class ChatroomModule extends BaseModule {
     hookListHandler(): void {
         // 生成InputChat元素时将InputChat元素保存起来
         hookFunction("ChatRoomCreateElement", 0, (args, next) => {
-            next(args);
-            if (ChatroomModule.InputElement == null)
-                return;
+            const result = next(args);
             ChatroomModule.InputElement = document.getElementById(
                 "InputChat"
             ) as HTMLInputElement;
+            if (ChatroomModule.InputElement == null) return result;
 
+            ChatroomModule.InputElement.removeEventListener("input", ChatroomModule.InputElementInputListener);
             ChatroomModule.InputElement.addEventListener("input", ChatroomModule.InputElementInputListener);
 
             ChatroomModule.buildKaomojiButton();
+            return result;
         });
 
         // 调整按钮位置
@@ -765,7 +778,8 @@ export class ChatroomModule extends BaseModule {
      * @returns 创建的表情按钮
      */
     private static buildKaomojiButton(): HTMLButtonElement {
-        if (this.KaomojiButton) return this.KaomojiButton;
+        if (this.KaomojiButton?.isConnected) return this.KaomojiButton;
+        this.KaomojiButton = null;
         const button = document.createElement("button");
         button.id = "kaomoji-button";
         button.className = "kaomoji-button";
@@ -802,6 +816,13 @@ export class ChatroomModule extends BaseModule {
         document.body.appendChild(button);
         this.ResizeKaomojiButton();
         return button;
+    }
+
+    private static ensureKaomojiButton(): void {
+        if (typeof CurrentScreen === "undefined" || CurrentScreen !== "ChatRoom") return;
+        this.InputElement = document.getElementById("InputChat") as HTMLInputElement | null;
+        if (!this.InputElement) return;
+        this.buildKaomojiButton();
     }
 
     /**
