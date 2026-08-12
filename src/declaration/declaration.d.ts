@@ -3,6 +3,7 @@ declare const DEBUG: boolean;
 declare function TranslationSwitchLanguage(languageCode: ServerChatRoomLanguage | "TW"): void;
 interface Window {
 	XSActivity_Loaded?: boolean;
+	XSActivity_Loading?: boolean;
 	XSActivity_VERSION?: string;
 	BROWSER_NAME?: string;
 	BROWSER_VERSION?: number;

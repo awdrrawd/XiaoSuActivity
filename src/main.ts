@@ -3,6 +3,9 @@ import { ModuleLoader } from "Modules/ModuleLoader";
 import { Localization } from "localization";
 
 function initWait() {
+    if (window.XSActivity_Loaded || window.XSActivity_Loading) return;
+    window.XSActivity_Loading = true;
+
     const localizationReady = Localization.init();
     conDebug({
         name: "Start Init",
