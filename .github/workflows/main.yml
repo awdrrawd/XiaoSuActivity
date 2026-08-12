@@ -33,6 +33,9 @@ jobs:
     - name: Copy language to dist
       run: cp translation/* dist/
 
+    - name: Copy emojiWorker to dist
+      run: cp src/workers/emojiWorkers.js dist/
+
     - name: Deploy mian to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
       with:

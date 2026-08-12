@@ -1165,7 +1165,10 @@ export class ChatroomModule extends BaseModule {
         // Worker 腳本託管在 github.io，与游戏源不同源，无法直接 new Worker(url)。
         // 抓取脚本文字后包成同源 blob URL 再构造。
         this.emojiWorker = fetch(EmojiWorkerRef)
-            .then((r) => r.text())
+            .then((r) => {
+                if (!r.ok) throw new Error(`emojiWorkers.js ${r.status} @ ${EmojiWorkerRef}`);
+                return r.text();
+            })
             .then((code) => {
                 const blobUrl = URL.createObjectURL(
                     new Blob([code], { type: "application/javascript" })
@@ -1187,6 +1190,8 @@ export class ChatroomModule extends BaseModule {
                 });
                 return worker;
             });
+        // 加載失敗別把壞掉的 promise 快取住，讓下次還能重試
+        this.emojiWorker.catch(() => { this.emojiWorker = null; });
         return this.emojiWorker;
     }
 
