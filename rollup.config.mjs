@@ -10,7 +10,7 @@ import json from "@rollup/plugin-json";
 const require = createRequire(import.meta.url);
 const packageJson = require("./package.json");
 
-export default {
+export default [{
   input: 'src/main.ts', // 入口文件路径
   output: {
     file: 'dist/XSActivity.js', // 输出文件路径
@@ -34,4 +34,13 @@ export default {
     commonjs(),
     json()
   ]
-};
+}, {
+  // emoji worker：把 fuse.js 打包内联成自包含的经典 worker（消除 import）
+  input: 'src/workers/emojiWorkers.js',
+  output: {
+    file: 'dist/emojiWorkers.js',
+    format: 'iife',
+    plugins: [terser({ mangle: false })]
+  },
+  plugins: [resolve({ browser: true }), commonjs(), json()]
+}];
