@@ -25,7 +25,7 @@ export class DataModule extends BaseModule {
         player_Progress: 0
     }
     static DefaultSetting: XSA_SettingsData = {
-
+        kaomojiButtonVisible: false
     }
     static DefaultOnlineSharedSettingsData: XSA_OnlineSharedSettingsData = {
         wombTattoosAppliedEffects: [],

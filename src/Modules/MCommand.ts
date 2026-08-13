@@ -105,7 +105,18 @@ export class CommandsModule extends BaseModule {
         kaomoji: {
             Tag: "kaomoji",
             Description: L.get("Command", "desc.kaomoji"),
-            Action: () => {
+            Action: (_args, _msg, parsed) => {
+                const params: string = this.getCommandParameters(parsed);
+                if (params === "show") {
+                    ChatroomModule.SetKaomojiButtonVisible(true);
+                    ChatRoomSendLocal(L.get("Chatroom", "kaomoji.button.shown.tips"), 5000);
+                    return;
+                }
+                if (params === "hide") {
+                    ChatroomModule.SetKaomojiButtonVisible(false);
+                    ChatRoomSendLocal(L.get("Chatroom", "kaomoji.button.hidden.tips"), 5000);
+                    return;
+                }
                 const stressStyle = "style='word-wrap: break-word;list-style: square;color: #FFCEE9;background-color: #AB6B8E;border-radius: 3px;padding: .2em .6em;margin: .2em .6em;'"
                 const weakStyle = "style='word-wrap: break-word;list-style: square;color: #B0809B;background-color: #AB6B8E;border-radius: 3px;padding: .2em .6em;margin: .2em .6em;'"
                 ChatRoomSendLocal(L.get("Command", "help.kaomoji", stressStyle, weakStyle))

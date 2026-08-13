@@ -13,6 +13,7 @@ import {
 } from "utils";
 import { Localization as L } from "localization";
 import { Emoji } from "./Emoji";
+import { DataModule, PlayerStorage } from "./MData";
 
 export class ChatroomModule extends BaseModule {
     // VVVV==========初始化与加载函数==========VVVV //
@@ -779,6 +780,26 @@ export class ChatroomModule extends BaseModule {
     };
 
     private static isKaomojiMenuCloseEventListenerAdded: boolean = false;
+
+    /**
+     * 颜文字快捷按钮(kaomoji-button)是否应当显示
+     * 默认隐藏, 需要通过 /xsa kaomoji -show 命令显示
+     */
+    private static isKaomojiButtonVisible(): boolean {
+        return PlayerStorage()?.settings?.kaomojiButtonVisible ?? false;
+    }
+
+    /**
+     * 设置颜文字快捷按钮(kaomoji-button)是否显示, 并持久化保存该设置
+     * @param visible 是否显示按钮
+     */
+    static SetKaomojiButtonVisible(visible: boolean): void {
+        DataModule.SaveSettings({ kaomojiButtonVisible: visible });
+        if (this.KaomojiButton) {
+            this.KaomojiButton.style.display = visible ? "inline" : "none";
+        }
+    }
+
     /**
      * 构建表情按钮并返回按钮实例
      * @returns 创建的表情按钮
@@ -790,6 +811,7 @@ export class ChatroomModule extends BaseModule {
         button.id = "kaomoji-button";
         button.className = "kaomoji-button";
         button.type = "button";
+        button.style.display = this.isKaomojiButtonVisible() ? "inline" : "none";
         button.addEventListener("click", () => {
             if (
                 !this.KaomojiMenuObject.menu ||
@@ -1125,7 +1147,7 @@ export class ChatroomModule extends BaseModule {
             this.KaomojiMenuObject.menu.style.display = "flex";
         }
         if (this.KaomojiButton) {
-            this.KaomojiButton.style.display = "inline";
+            this.KaomojiButton.style.display = this.isKaomojiButtonVisible() ? "inline" : "none";
         }
     }
 
