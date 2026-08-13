@@ -4,7 +4,6 @@
         "her": "she",
         "it": "it",
         "they": "they",
-
         "~~~": "VV ~~Language code used for word segmentation~~  VV",
         "cn": "zh",
         "en": "en"
@@ -61,10 +60,8 @@
         "脸蹭": "Nuzzle with cheek",
         "鼻子蹭": "Nuzzle with nose",
         "埋怀里": "Bury head in chest",
-
         "~~动作占位符说明~~": "{0} is the name of the action sender, {1} is the name of the action receiver, {2} is the name of the body part -- (This entry does not need translation.)",
         "~~Action placeholder description~~": "{0} is the name of the action sender, {1} is the name of the action receiver, {2} is the name of the body part. --(This article does not require translation.)",
-
         "眯眼.Desc.0": "",
         "眯眼.Desc.1": "{0} squinted slightly.",
         "眼神飘忽.Desc.0": "",
@@ -167,7 +164,6 @@
         "鼻子蹭.Desc.1": "",
         "埋怀里.Desc.0": "{0} buried their head in {1}'s chest.",
         "埋怀里.Desc.1": "",
-
         "ItemAddon": "Body (Addon)",
         "ItemArms": "Arms",
         "ItemBoots": "Feet",
@@ -196,18 +192,17 @@
         "ItemTorso2": "Ribs",
         "ItemVulva": "Vagina",
         "ItemVulvaPiercings": "Clitoris",
-
         "XSAct.Tickle.Resist": "{1} tightly shut their eyes, trying their best to resist climax, but {0}'s tickling interfered, causing a suppressed moan to slip from their lips. It's unclear whether they can still hold on."
     },
     "Chatroom": {
         "Prefix.reply": "Reply",
-
         "Contextmenu.Button.reply": "Reply",
         "Contextmenu.Button.copy": "Copy",
         "Contextmenu.Button.whisper": "Whisper",
         "Contextmenu.Button.delete": "Delete",
         "kaomoji.doesNotExist.tips": "This kaomoji pack does not exist. Please re-enter or type |help to view parameters.",
-
+        "kaomoji.button.shown.tips": "The kaomoji shortcut button is now shown. Click it next to the chat input to open the kaomoji panel.",
+        "kaomoji.button.hidden.tips": "The kaomoji shortcut button is now hidden. You can still use |all and other parameters to open the kaomoji panel.",
         "moan.0": " Mmm~❤..",
         "moan.1": " Ah~❤ haa..",
         "moan.2": " --Mm~ uh..",
@@ -218,7 +213,6 @@
         "moan.7": " ❤ ah~",
         "moan.8": " ❤... ah-mm..",
         "moan.9": " ❤. Oh~ mm~.",
-
         "kaomojiHelp.0": "all ==> All expressions",
         "kaomojiHelp.1": "hp ==> Happy",
         "kaomojiHelp.2": "sd ==> Sad",
@@ -227,7 +221,6 @@
         "kaomojiHelp.5": "ap ==> Surprised",
         "kaomojiHelp.6": "cf ==> Confused",
         "kaomojiHelp.7": "nt ==> Playful",
-
         "KaomojiTitle.all": "All",
         "KaomojiTitle.hp": "Happy",
         "KaomojiTitle.sd": "Sad",
@@ -252,11 +245,11 @@
         "desc.new": "Display the latest update log for [Xiao Su's Activity Module].",
         "desc.act": "Display the full list of actions added by [Xiao Su's Activity Module].",
         "desc.jieba": "Display command help for the automatic stutter effect.",
-        "desc.kaomoji": "Display instructions for quick kaomoji.",
+        "desc.kaomoji": "Display instructions for quick kaomoji. The kaomoji shortcut button next to the chat input is hidden by default; enter '/xsa kaomoji -show' to show it, or '/xsa kaomoji -hide' to hide it again.",
         "desc.chess": "Start a chess match! Who will challenge? (Enter /xsa chess -h to view help)",
         "help.export": "Enter: '/xsa export -[time]' to export chat logs within a specific time range.\nExample: '/xsa export -05:34-20:40' (seconds allowed)\nBy default, exports all chat logs in the current chatroom.\nNote!",
         "help.jieba": "Messages starting with `<span {0}>`</span><span {0}>space</span><span {1}>space</span>` will be sent with a stuttering effect.\nThere are two ways stuttering is applied:\nIf two spaces are entered, stuttering may occur at that position.\nIf one space is entered, the word segmentation system is used.\nAn optional parameter exists:\nIf the message starts with `<span {0}>`</span><span {0}>[1-9]</span>`, the number indicates stutter intensity (default 3). Higher means more stuttering.\nExample without parameter:\n<span {0}>`</span> [words to say]\nPossible output: \" words...-to-the... words... \"\nExample with parameter:\n<span {0}>`</span>3 [words to say]\nThe 3 indicates stutter level, meaning each space has a 30% chance to stutter.\nIf the number is followed by <span {0}>m</span>, moaning sounds will be added based on current arousal.",
-        "help.kaomoji": "Enter <span {0}>|</span>+<span {1}>parameter</span>, or click the small button under the chat input to open the kaomoji panel.\nLeft-click: insert into input box;\nRight-click: send as an action message;\nMiddle-click: send as a normal message.\nAvailable parameters:\n<span {0}>help</span> Show all parameters.\n<span {0}>all</span> Show all kaomoji.\n<span {0}>hp</span> Happy kaomoji.\n<span {0}>sd</span> Sad kaomoji.\n<span {0}>sy</span> Shy kaomoji.\n<span {0}>ar</span> Angry kaomoji.\n<span {0}>sp</span> Surprised kaomoji.\n<span {0}>cf</span> Confused kaomoji.\n<span {0}>nt</span> Playful kaomoji.",
+        "help.kaomoji": "Enter <span {0}>|</span>+<span {1}>parameter</span>, or click the small button under the chat input to open the kaomoji panel.\nLeft-click: insert into input box;\nRight-click: send as an action message;\nMiddle-click: send as a normal message.\nAvailable parameters:\n<span {0}>help</span> Show all parameters.\n<span {0}>all</span> Show all kaomoji.\n<span {0}>hp</span> Happy kaomoji.\n<span {0}>sd</span> Sad kaomoji.\n<span {0}>sy</span> Shy kaomoji.\n<span {0}>ar</span> Angry kaomoji.\n<span {0}>sp</span> Surprised kaomoji.\n<span {0}>cf</span> Confused kaomoji.\n<span {0}>nt</span> Playful kaomoji.\nThe kaomoji shortcut button (small button next to the input box) is hidden by default; this does not affect opening the panel with the |all parameter and others.\nEnter '/xsa kaomoji -show' to show the shortcut button.\nEnter '/xsa kaomoji -hide' to hide the shortcut button again.\n",
         "help.chess": "Use /xsa chess to start a match. Other players cannot see the board initially.\nOnce a tile is selected and the send button is clicked, others will see the board.\nAny player in the chatroom can select a tile. When any player clicks send, the game begins.\nThe first sender can play against multiple players simultaneously.\nPlayers may adjust their own pieces before sending, but not their opponent's.\nThis plugin does not provide win detection for Gomoku or Go.\nCaptured stones in Go must be manually removed.\n\nAfter sending, the board will disappear after 30 seconds.\nOther players will still see the board state.\nOnly players with the plugin installed can play and view the game.",
         "desc.version": "Xiao Su's Activity Module version number"
     },
