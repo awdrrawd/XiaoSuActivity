@@ -795,8 +795,13 @@ export class ChatroomModule extends BaseModule {
      */
     static SetKaomojiButtonVisible(visible: boolean): void {
         DataModule.SaveSettings({ kaomojiButtonVisible: visible });
+        this.ensureKaomojiButton();
         if (this.KaomojiButton) {
             this.KaomojiButton.style.display = visible ? "inline" : "none";
+        }
+        if (!visible && this.KaomojiMenuObject.menu) {
+            this.KaomojiMenuObject.menu.style.display = "none";
+            this.KaomojiShouldShow = false;
         }
     }
 

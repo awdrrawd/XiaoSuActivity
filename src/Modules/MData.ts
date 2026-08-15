@@ -115,12 +115,14 @@ export class DataModule extends BaseModule {
                 this.IsModUpDate = versionCompare;
                 Player.XSA.version = XSActivity_VERSION;
             }
-            for (const k2 in Player.XSA.data) {
+            Player.XSA.data ??= { ...this.DefaultData };
+            Player.XSA.settings ??= { ...this.DefaultSetting };
+            for (const k2 in this.DefaultData) {
                 if (Player.XSA.data[k2] === undefined) {
                     Player.XSA.data[k2] = this.DefaultData[k2]
                 }
             }
-            for (const k3 in Player.XSA.settings) {
+            for (const k3 in this.DefaultSetting) {
                 if (Player.XSA.settings[k3] === undefined) {
                     Player.XSA.settings[k3] = this.DefaultSetting[k3]
                 }
@@ -170,11 +172,14 @@ export class DataModule extends BaseModule {
      */
     public static SaveSettings(settingsItem: { [settingKey: string]: any }): void {
         const settingsData = PlayerStorage()?.settings;
+        let changed = false;
         for (const item in settingsItem) {
             if (settingsData && settingsData[item] != settingsItem[item]) {
                 settingsData[item] = settingsItem[item];
+                changed = true;
             }
         }
+        if (changed) this.allDataSave();
     }
     public static SaveData(dataItem: { [dataKey: string]: any }): void {
         const data = PlayerStorage()?.data;
