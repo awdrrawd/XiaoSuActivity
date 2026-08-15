@@ -106,7 +106,7 @@ export class CommandsModule extends BaseModule {
             Tag: "kaomoji",
             Description: L.get("Command", "desc.kaomoji"),
             Action: (_args, _msg, parsed) => {
-                const params: string = this.getCommandParameters(parsed);
+                const params = (parsed[1] ?? "").toLowerCase();
                 if (params === "show") {
                     ChatroomModule.SetKaomojiButtonVisible(true);
                     ChatRoomSendLocal(L.get("Chatroom", "kaomoji.button.shown.tips"), 5000);
@@ -240,20 +240,13 @@ export class CommandsModule extends BaseModule {
     }
 
     private CommandHandler(parsed: Array<string>): void {
-        const parsedCount: number = parsed.length;
-        if (parsedCount == 0) this.DisplayHelp();
-        if (parsedCount >= 1) {
-            const last = parsed[parsedCount - 1];
-            if (last.startsWith("-")) {
-                const cmd: string = parsed[parsedCount - 2];
-                if (cmd in this.commandsDict) {
-                    this.commandsDict[cmd]?.Action?.('', '', parsed);
-                }
-            } else {
-                if (last in this.commandsDict) {
-                    this.commandsDict[last]?.Action?.('', '', parsed);
-                }
-            }
+        if (parsed.length === 0) {
+            this.DisplayHelp();
+            return;
+        }
+        const cmd = parsed[0].toLowerCase();
+        if (cmd in this.commandsDict) {
+            this.commandsDict[cmd]?.Action?.('', '', parsed);
         }
     }
 }

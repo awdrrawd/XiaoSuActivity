@@ -1,6 +1,8 @@
 import { conDebug, hookFunction } from "utils";
 import EnglishStrings from "../translation/EN.json";
 
+const BundledEnglishStrings = EnglishStrings as unknown as IString;
+
 export class Localization {
     private static readonly LINK: string = DEBUG ? 'https://awdrrawd.github.io/XiaoSuActivity/dev/' : 'https://awdrrawd.github.io/XiaoSuActivity/main/'
     private static readonly SUPPORTED_LANGUAGES = new Set(["TW", "CN", "EN", "DE", "FR", "RU", "UA"]);
@@ -93,6 +95,10 @@ class STR<T extends FirstStringKey> {
             && Localization.STRINGS[firstKey]
             && Object.prototype.hasOwnProperty.call(Localization.STRINGS[firstKey], key)) {
             this.str = Localization.STRINGS[firstKey][key] as string;
+        } else if (BundledEnglishStrings[firstKey]
+            && Object.prototype.hasOwnProperty.call(BundledEnglishStrings[firstKey], key)) {
+            // A hosted translation can briefly lag behind a new script build.
+            this.str = BundledEnglishStrings[firstKey][key] as string;
         } else {
             this.str = "[STRING_RETRIEVAL_FAILED!!]";
         }

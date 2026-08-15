@@ -36,7 +36,7 @@ type XSASettingAndData = {
 
 type XSA_SettingsData = {
 	[key: string]: any;
-	/** 颜文字快捷按钮(kaomoji-button)是否显示, 默认 false 即默认隐藏, 可通过 /xsa kaomoji -show 显示 */
+	/** 颜文字快捷按钮(kaomoji-button)是否显示, 默认 false 即默认隐藏, 可通过 /xsa kaomoji show 显示 */
 	kaomojiButtonVisible?: boolean;
 }
 type XSA_Data = {
