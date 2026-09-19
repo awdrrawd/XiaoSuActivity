@@ -48,8 +48,6 @@ export class DataModule extends BaseModule {
         this.hookListHandle();
         DataModule.SyncDataForPlayer();
 
-        this.hookListHandle();
-
         this.Loaded = true;
     }
     public Init(): void {

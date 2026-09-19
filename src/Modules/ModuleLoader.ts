@@ -31,7 +31,8 @@ export class ModuleLoader {
                 .sort((a, b) => a.priority - b.priority)
                 .forEach((m) => {
                     // 初始化模块
-                    m.Init();
+                    try { m.Init(); }
+                    catch (error) { throw new Error(`${m.moduleName} initialization failed: ${String(error)}`); }
                     conDebug(`模块 ${m.moduleName} 尝试初始化完成`);
                     this.modulesInitCount++;
                 });
@@ -50,7 +51,8 @@ export class ModuleLoader {
             this.mList
                 .forEach((m) => {
                     // 加载模块
-                    m.Load();
+                    try { m.Load(); }
+                    catch (error) { throw new Error(`${m.moduleName} loading failed: ${String(error)}`); }
                     conDebug(`模块 ${m.moduleName} 已尝试加载`);
                     this.modulesLoadCount++;
                 });

@@ -17,9 +17,7 @@ export class Localization {
         conDebug("本地化模块初始化.");
         hookFunction("TranslationSwitchLanguage", 0, (args, next) => {
             const result = next(args);
-            void Localization.getLangJson().then(() => {
-                window.dispatchEvent(new CustomEvent("XSA:languageChanged"));
-            });
+            void Localization.getLangJson().catch(error => console.warn("Translation refresh failed:", error));
             return result;
         })
 
@@ -27,51 +25,44 @@ export class Localization {
         return this.loadPromise;
     }
 
-    private static getCount = 0;
+    private static controller: AbortController | null = null;
     private static async getLangJson(langCode?: string): Promise<void> {
-        const L = langCode ? langCode : localStorage.getItem("BondageClubLanguage");
-        const normalizedLanguage = (L ?? "EN").toUpperCase();
-        const lang = normalizedLanguage === "CH"
-            ? "CN"
-            : this.SUPPORTED_LANGUAGES.has(normalizedLanguage) ? normalizedLanguage : "EN";
-
+        const code = (langCode ?? localStorage.getItem("BondageClubLanguage") ?? "EN").toUpperCase();
+        const lang = code === "CH" ? "CN" : this.SUPPORTED_LANGUAGES.has(code) ? code : "EN";
+        const requestId = ++this.requestId;
+        this.controller?.abort();
+        const controller = this.controller = new AbortController();
+        // Always provide usable strings immediately, including after a language switch.
+        this.STRINGS = BundledEnglishStrings;
+        window.XSA_STRINGS = this.STRINGS;
+        window.dispatchEvent(new CustomEvent("XSA:languageChanged"));
+        if (lang === "EN") return;
         const href = this.LINK + `${lang}.json`;
-        const currentRequestId = ++this.requestId;
-
-        conDebug("开始获取本地化文件.");
-        conDebug(`获取地址: ${href}`);
-        try {
-            const response = await fetch(href);
-            if (!response.ok) throw new Error(`HTTP ${response.status} while loading ${href}`);
-            const data = await response.json() as IString;
-            if (currentRequestId !== this.requestId) return;
-            this.getCount = 0;
-            this.STRINGS = data;
-            window.XSA_STRINGS = this.STRINGS;
-            conDebug({
-                name: "本地化文件加载完成.",
-                content: data
-            });
-        } catch (error) {
-                if (currentRequestId !== this.requestId) return;
-                if (/HTTP 4\d\d/.test(String(error))) {
-                    this.getCount = 0;
-                    console.error("获取翻译文件失败: ", error);
-                    return;
-                }
-                this.getCount++;
-                if (this.getCount < 3) {
-                    console.error("获取翻译文件失败: ", error, "\n1秒后重新获取.");
-                    setTimeout(() => {
-                        void this.getLangJson(lang);
-                    }, 1000);
-                } else {
-                    if (lang === "CN") console.error("获取翻译文件失败: ", error, "\n3次失败.")
-                    else {
-                        console.error("获取翻译文件失败: ", error, "\n3次失败, 尝试获取默认的中文翻译.");
-                        void this.getLangJson("CN");
-                    }
-                }
+        for (let attempt = 0; attempt < 3; attempt++) {
+            if (controller.signal.aborted) return;
+            const request = new AbortController();
+            const abort = () => request.abort();
+            controller.signal.addEventListener("abort", abort, {once: true});
+            const timer = setTimeout(abort, 30000);
+            try {
+                const response = await fetch(href, {signal: request.signal});
+                if (!response.ok) throw new Error(`HTTP ${response.status} while loading ${href}`);
+                const data = await response.json() as IString;
+                if (!data || typeof data !== "object" || Array.isArray(data)) throw new Error("Invalid translation JSON");
+                if (requestId !== this.requestId) return;
+                this.STRINGS = data;
+                window.XSA_STRINGS = data;
+                window.dispatchEvent(new CustomEvent("XSA:languageChanged"));
+                return;
+            } catch (error) {
+                if (controller.signal.aborted || requestId !== this.requestId) return;
+                console.warn("XiaoSuActivity translation download failed; using bundled English:", error);
+                if (/HTTP 4\d\d/.test(String(error))) return;
+            } finally {
+                clearTimeout(timer);
+                controller.signal.removeEventListener("abort", abort);
+            }
+            if (attempt < 2) await new Promise(resolve => setTimeout(resolve, 1000));
         }
     }
 

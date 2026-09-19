@@ -35,6 +35,7 @@
         "typescript": "^5.3.3"
     },
     "scripts": {
+        "test": "node --test tools/test-startup.cjs",
         "build": "rollup -c rollup.config.mjs",
         "dev": "rollup -c rollup.dev.config.mjs",
         "local_dev": "rollup -c rollup.local.dev.config.mjs"

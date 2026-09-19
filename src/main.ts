@@ -1,12 +1,22 @@
-import { conDebug, hookFunction, MSGType } from "./utils";
+import { conDebug, hookFunction, MSGType, registerSDK, bcModSDK } from "./utils";
 import { ModuleLoader } from "Modules/ModuleLoader";
 import { Localization } from "localization";
 
-function initWait() {
+async function initWait() {
     if (window.XSActivity_Loaded || window.XSActivity_Loading) return;
+    if (window.XSActivity_Error) {
+        console.error("XiaoSuActivity previously failed during module setup; reload the page before retrying.", window.XSActivity_Error);
+        return;
+    }
     window.XSActivity_Loading = true;
+    const deadline = Date.now() + 45000;
+    while (typeof LoginResponse !== "function" || typeof TranslationSwitchLanguage !== "function") {
+        if (Date.now() >= deadline) throw new Error("Game functions are not ready");
+        await new Promise(resolve => setTimeout(resolve, 100));
+    }
+    registerSDK();
 
-    const localizationReady = Localization.init();
+    void Localization.init().catch(error => console.warn("Translation initialization failed; using bundled English:", error));
     conDebug({
         name: "Start Init",
         type: MSGType.Workflow_Log,
@@ -31,10 +41,12 @@ function initWait() {
         return next(args);
     });
 
+    let started = false;
     const start = () => {
-        void localizationReady.then(() => init()).catch((error) => {
-            console.error("XiaoSuActivity initialization failed:", error);
-        });
+        if (started) return;
+        started = true;
+        try { init(); }
+        catch (error) { failInitialization(error, true); }
     };
 
     if (typeof Player !== "undefined" && Player?.MemberNumber !== undefined) {
@@ -54,7 +66,7 @@ function initWait() {
 }
 
 export function init() {
-    if (window.XSActivity_Loaded) return;
+    if (window.XSActivity_Loaded || window.XSActivity_Error) return;
 
     const InitModuleCount = ModuleLoader.InitModules();
 
@@ -72,6 +84,7 @@ export function init() {
         content: `Loaded ${moduleCount} modules    FullLoaded: ${ModuleLoader.CompleteLoadingSuccessful}`
     });
 
+    window.XSActivity_Loading = false;
     if (!ModuleLoader.CompleteLoadingSuccessful) {
         throw new Error("XSActivity load or init failed");
     }
@@ -79,4 +92,13 @@ export function init() {
 
 
 
-initWait();
+function failInitialization(error: unknown, partial = false) {
+    window.XSActivity_Loading = false;
+    if (partial) window.XSActivity_Error = String(error);
+    bcModSDK?.unload();
+    console.error(partial
+        ? "XiaoSuActivity initialization failed; reload the page before retrying:"
+        : "XiaoSuActivity game readiness failed; loading again will retry:", error);
+}
+
+void initWait().catch(error => failInitialization(error, Boolean(bcModSDK)));

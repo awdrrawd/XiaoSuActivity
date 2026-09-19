@@ -14,12 +14,16 @@ export const EmojiWorkerRef = `${RealRef}emojiWorkers.js`;
 
 
 //   VVVVVVVVVVVVVVVVVVVVVVVVVVVVV  ----SDK----  VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV    //
-export const bcModSDK = bcModSDKRef.registerMod({
+export let bcModSDK: ReturnType<typeof bcModSDKRef.registerMod>;
+export function registerSDK() {
+    if (bcModSDK) return;
+    bcModSDK = bcModSDKRef.registerMod({
     name: "XiaoSuActivity",
     fullName: "XiaoSu's Activity Expand",
     version: XSActivity_VERSION.startsWith("v") ? XSActivity_VERSION.slice(1) : XSActivity_VERSION,
     repository: "https://github.com/awdrrawd/XiaoSuActivity"
-});
+    });
+}
 
 // export type PatchHook = (args: any[], next: (args: any[]) => any) => any;
 export function hookFunction<TFunctionName extends string>(target: TFunctionName, priority: number, hook: PatchHook<GetDotedPathType<typeof globalThis, TFunctionName>>): () => void {

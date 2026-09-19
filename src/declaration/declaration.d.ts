@@ -4,6 +4,7 @@ declare function TranslationSwitchLanguage(languageCode: ServerChatRoomLanguage 
 interface Window {
 	XSActivity_Loaded?: boolean;
 	XSActivity_Loading?: boolean;
+	XSActivity_Error?: string;
 	XSActivity_VERSION?: string;
 	BROWSER_NAME?: string;
 	BROWSER_VERSION?: number;
