@@ -1,6 +1,10 @@
 # 动作拓展以及其他易用性功能
 为 [Bondage Club](https://www.bondageprojects.elementfx.com/)制作的Mod。
 
+> ### 關於本庫（Fork 說明）
+> 本庫 fork 自原作者 [iceriny](https://github.com/iceriny) 的 [iceriny/XiaoSuActivity](https://github.com/iceriny/XiaoSuActivity)。
+> 由於原作者目前沒有再更新，本庫在其基礎上繼續維護與更新。感謝原作者的創作。
+
 - 详细功能查看以下看板:
   - [Trello](https://trello.com/b/wIleQnF7/xiaosuactivity)
 - ~~当前功能:~~
@@ -14,18 +18,30 @@
 **推荐使用Tampermonkey插件**
 **测试版非必要请勿使用，编程水平有限，边学边写。测试版仅作为自己的实验室，出现bug的概率相当高!**
 
-- Tampermonkey
-  - 正式版: https://iceriny.github.io/XiaoSuActivity/main/userLoad.user.js
-  - 测试版: https://iceriny.github.io/XiaoSuActivity/dev/userLoad_dev.user.js
-- 书签:
+- Tampermonkey（本庫）
+  - 正式版: https://awdrrawd.github.io/XiaoSuActivity/main/userLoad.user.js
+  - 测试版: https://awdrrawd.github.io/XiaoSuActivity/dev/userLoad_dev.user.js
+- 书签（本庫）:
 ```code
-javascript:(()=>{fetch('https://iceriny.github.io/XiaoSuActivity/main/userLoad.user.js').then(r=>r.text()).then(r=>eval(r));})();
+javascript:(()=>{fetch('https://awdrrawd.github.io/XiaoSuActivity/main/userLoad.user.js').then(r=>r.text()).then(r=>eval(r));})();
 ```
+
+### 從本庫載入的位址
+如果要從本庫（awdrrawd）抓取安裝，請使用以下位址：
+
+* `https://awdrrawd.github.io/XiaoSuActivity/main/XSActivity.js`　正式版主程式
+* `https://awdrrawd.github.io/XiaoSuActivity/main/userLoad.user.js`　正式版 Tampermonkey 載入腳本
+* `https://awdrrawd.github.io/XiaoSuActivity/dev/XSActivity_dev.js`　測試版主程式
+
+### 原作者版本
+原作者 iceriny 的版本（已無更新）位址如下，僅供參考：
+- 正式版: https://iceriny.github.io/XiaoSuActivity/main/userLoad.user.js
+- 测试版: https://iceriny.github.io/XiaoSuActivity/dev/userLoad_dev.user.js
 
 ## 翻译协作说明: 
 - 如果你想帮助完成你使用的语言的翻译，请提交一个PR，在`/translation/`目录下添加一个json文件，文件名格式为`XX.json`，`XX`为语言代码，例如`CN.json`。
 - 你可以把现有的`CN.json`文件复制一份，然后修改文件名和其中的值，然后提交PR。
-- json文件格式参考[/translation/CN.json](https://github.com/iceriny/XiaoSuActivity/blob/dev/translation/CN.json)。
+- json文件格式参考[/translation/CN.json](https://github.com/awdrrawd/XiaoSuActivity/blob/main/translation/CN.json)。
 - 如果你不知道你使用的语言的语言代码，请在游戏页面打开控制台(`F12`)，输入`TranslationLanguage`，然后返回的值就是你的语言代码。
 
 
