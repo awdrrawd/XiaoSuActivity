@@ -6,14 +6,14 @@ on:
   push:
     branches:
       - main
+  # PR 只跑建置與測試（不部署），供 branch ruleset 的必要狀態檢查使用
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 # 預設不給任何權限，每個 job 只拿自己需要的
 permissions: {}
-
-concurrency:
-  group: pages
-  cancel-in-progress: false
 
 jobs:
   build:
@@ -30,7 +30,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: '20'
+          node-version: '22'
 
       # 依 lockfile 安裝，並停用依賴套件的 install/postinstall 腳本
       - name: Install dependencies
@@ -63,7 +63,12 @@ jobs:
 
   deploy:
     needs: build
+    # PR 不部署
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
+    concurrency:
+      group: pages
+      cancel-in-progress: false
     # 只有部署 job 能寫 Pages，且不需要 contents 權限
     permissions:
       pages: write
